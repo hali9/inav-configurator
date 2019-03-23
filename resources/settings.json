@@ -597,6 +597,9 @@
   "flaperon_throw_offset": {
     "type": "uint16_t"
   },
+  "spoileron_throw_offset": {
+    "type": "uint16_t"
+  },
   "tri_unarmed_servo": {
     "type": "uint8_t",
     "table": {
