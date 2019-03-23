@@ -2761,6 +2761,9 @@
     "platformHasFlaps": {
         "message": "Has flaps"
     },
+    "platformHasSpoilers": {
+        "message": "Has spoilers"
+    },
     "mixerPreset": {
         "message": "Mixer preset"
     },
