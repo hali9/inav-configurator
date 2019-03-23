@@ -253,6 +253,8 @@ TABS.mixer.initialize = function (callback, scrollPosition) {
             platforms = helper.platform.getList(),
             $hasFlapsWrapper = $('#has-flaps-wrapper'),
             $hasFlaps = $('#has-flaps'),
+            $hasSpoilersWrapper = $('#has-spoilers-wrapper'),
+            $hasSpoilers = $('#has-spoilers'),
             $mixerPreset = $('#mixer-preset'),
             modal;
 
@@ -275,6 +277,16 @@ TABS.mixer.initialize = function (callback, scrollPosition) {
         });
         $hasFlaps.change();
 
+        $hasSpoilers.prop("checked", MIXER_CONFIG.hasSpoilers);
+        $hasSpoilers.change(function () {
+            if ($(this).is(":checked")) {
+                MIXER_CONFIG.hasSpoilers = 1;
+            } else {
+                MIXER_CONFIG.hasSpoilers = 0;
+            }
+        });
+        $hasSpoilers.change();
+
         $platformSelect.change(function () {
             MIXER_CONFIG.platformType = parseInt($platformSelect.val(), 10);
             currentPlatform = helper.platform.getById(MIXER_CONFIG.platformType);
@@ -286,6 +298,14 @@ TABS.mixer.initialize = function (callback, scrollPosition) {
                 $platformSelectParent.removeClass('no-bottom-border');
             } else {
                 $hasFlapsWrapper.addClass('is-hidden');
+                $platformSelectParent.addClass('no-bottom-border');
+            }
+
+            if (currentPlatform.spoilersPossible) {
+                $hasSpoilersWrapper.removeClass('is-hidden');
+                $platformSelectParent.removeClass('no-bottom-border');
+            } else {
+                $hasSpoilersWrapper.addClass('is-hidden');
                 $platformSelectParent.addClass('no-bottom-border');
             }
 
