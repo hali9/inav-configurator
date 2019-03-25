@@ -885,6 +885,9 @@
     "portsFunction_TELEMETRY_SMARTPORT": {
         "message": "SmartPort"
     },
+    "portsFunction_TELEMETRY_SIM": {
+        "message": "SIM"
+    },
     "portsFunction_RX_SERIAL": {
         "message": "Serial RX"
     },
