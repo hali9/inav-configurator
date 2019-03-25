@@ -184,7 +184,8 @@ var FC = {
             hasFlaps: false,
             appliedMixerPreset: -1,
             numberOfMotors: 0,
-            numberOfServos: 0
+            numberOfServos: 0,
+            hasSpoilers: false
         },
 
         SERIAL_CONFIG = {
@@ -1122,7 +1123,8 @@ var FC = {
             'Stabilized Pitch+',    // 25
             'Stabilized Pitch-',    // 26
             'Stabilized Yaw+',      // 27
-            'Stabilized Yaw-'       // 28,
+            'Stabilized Yaw-',      // 28
+            'Spoilers'              // 29,
         ];
     },
     getServoMixInputName: function (input) {

@@ -29,7 +29,8 @@ const INPUT_STABILIZED_ROLL = 0,
     INPUT_RC_AUX4 = 11,
     INPUT_GIMBAL_PITCH = 12,
     INPUT_GIMBAL_ROLL = 13,
-    INPUT_FEATURE_FLAPS = 14;
+    INPUT_FEATURE_FLAPS = 14,
+    INPUT_FEATURE_SPOILERS = 29;
 
 const
     PLATFORM_MULTIROTOR     = 0,
@@ -525,43 +526,50 @@ const platformList = [
         id: 0,
         name: "Multirotor",
         enabled: true,
-        flapsPossible: false
+        flapsPossible: false,
+        spoilersPossible: false
     },
     {
         id: 1,
         name: "Airplane",
         enabled: true,
-        flapsPossible: true
+        flapsPossible: true,
+        spoilersPossible: true
     },
     {
         id: 2,
         name: "Helicopter",
         enabled: false,
-        flapsPossible: false
+        flapsPossible: false,
+        spoilersPossible: false
     },
     {
         id: 3,
         name: "Tricopter",
         enabled: true,
-        flapsPossible: false
+        flapsPossible: false,
+        spoilersPossible: false
     },
     {
         id: 4,
         name: "Rover",
         enabled: false,
-        flapsPossible: false
+        flapsPossible: false,
+        spoilersPossible: false
     },
     {
         id: 5,
         name: "Boat",
         enabled: false,
-        flapsPossible: false
+        flapsPossible: false,
+        spoilersPossible: false
     },
     {
         id: 6,
         name: "Other",
         enabled: false,
-        flapsPossible: false
+        flapsPossible: false,
+        spoilersPossible: false
     }
 ];
 

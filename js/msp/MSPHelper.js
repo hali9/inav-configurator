@@ -1432,6 +1432,9 @@ var mspHelper = (function (gui) {
                 MIXER_CONFIG.appliedMixerPreset = data.getInt16(5, true);
                 MIXER_CONFIG.numberOfMotors = data.getInt8(7);
                 MIXER_CONFIG.numberOfServos = data.getInt8(8);
+                if (semver.gte(CONFIG.apiVersion, "2.4.0")) {
+                    MIXER_CONFIG.hasSpoilers = data.getInt8(9);
+                }
                 MOTOR_RULES.setMotorCount(MIXER_CONFIG.numberOfMotors);
                 SERVO_RULES.setServoCount(MIXER_CONFIG.numberOfServos);
                 break;
@@ -2141,6 +2144,11 @@ var mspHelper = (function (gui) {
                 buffer.push(MIXER_CONFIG.hasFlaps);
                 buffer.push(lowByte(MIXER_CONFIG.appliedMixerPreset));
                 buffer.push(highByte(MIXER_CONFIG.appliedMixerPreset));
+                buffer.push(MIXER_CONFIG.numberOfMotors);
+                buffer.push(MIXER_CONFIG.numberOfServos);
+                if (semver.gte(CONFIG.apiVersion, "2.4.0")) {
+                    buffer.push(MIXER_CONFIG.hasSpoilers);
+                }
                 break;
 
             case MSPCodes.MSP2_INAV_SET_MC_BRAKING:
