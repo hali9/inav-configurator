@@ -1054,7 +1054,10 @@ var FC = {
         return ["Current", "Extra", "Fixed", "Max", "At Least"];
     },
     getRthAllowLanding: function() {
-        return ["Never", "Always", "Only on failsafe"];
+        if (semver.gte(CONFIG.flightControllerVersion, '2.2.0'))
+            return ["Never", "Always", "On aproach", "Only on failsafe", "Only on failsafe aproach", "No aproach on failsafe"];
+        else
+            return ["Never", "Always", "Only on failsafe"];
     },
     getFailsafeProcedure: function () {
         return {
