@@ -24,7 +24,8 @@ TABS.mixer.initialize = function (callback, scrollPosition) {
         mspHelper.loadMotors,
         mspHelper.loadServoMixRules,
         mspHelper.loadMotorMixRules,
-        mspHelper.loadOutputMapping
+        mspHelper.loadOutputMapping,
+        mspHelper.loadLogicConditions
     ]);
     loadChainer.setExitPoint(loadHtml);
     loadChainer.execute();
@@ -377,6 +378,9 @@ TABS.mixer.initialize = function (callback, scrollPosition) {
         renderOutputMapping();
 
         localize();
+
+        LOGIC_CONDITIONS.render($('#logic-table'));
+
         GUI.content_ready(callback);
     }
 
