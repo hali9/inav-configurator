@@ -59,7 +59,15 @@ TABS.ports.initialize = function (callback) {
         groups: ['peripherals'],
         maxPorts: 1 }
     );
- 
+
+    if (semver.gte(CONFIG.flightControllerVersion, "2.2.0")) {
+        functionRules.push({
+            name: 'TELEMETRY_SIM',
+            groups: ['telemetry'],
+            maxPorts: 1 }
+        );
+    }
+
     for (var i = 0; i < functionRules.length; i++) {
         functionRules[i].displayName = chrome.i18n.getMessage('portsFunction_' + functionRules[i].name);
     }
