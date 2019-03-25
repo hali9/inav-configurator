@@ -520,9 +520,45 @@ var mspHelper = (function (gui) {
                 SERVO_RULES.cleanup();
 
                 break;
+            case MSPCodes.MSP2_INAV_SERVO_MIXER:
+                SERVO_RULES.flush();
+                if (data.byteLength % 6 === 0) {
+                    for (i = 0; i < data.byteLength; i += 6) {
+                        SERVO_RULES.put(new ServoMixRule(
+                            data.getInt8(i),
+                            data.getInt8(i + 1),
+                            data.getInt16(i + 2, true),
+                            data.getInt8(i + 4),
+                            data.getInt8(i + 5)
+                        ));
+                    }
+                }
+                SERVO_RULES.cleanup();
+                break;
 
             case MSPCodes.MSP_SET_SERVO_MIX_RULE:
                 console.log("Servo mix saved");
+                break;
+
+            case MSPCodes.MSP2_INAV_LOGIC_CONDITIONS:
+                LOGIC_CONDITIONS.flush();
+                if (data.byteLength % 13 === 0) {
+                    for (i = 0; i < data.byteLength; i += 13) {
+                        LOGIC_CONDITIONS.put(new LogicCondition(
+                            data.getInt8(i),
+                            data.getInt8(i + 1),
+                            data.getInt8(i + 2),
+                            data.getInt32(i + 3, true),
+                            data.getInt8(i + 7),
+                            data.getInt32(i + 8, true),
+                            data.getInt8(i + 12)
+                        ));
+                    }
+                }
+                break;
+
+            case MSPCodes.MSP2_INAV_SET_LOGIC_CONDITIONS:
+                console.log("Logic conditions saved");
                 break;
 
             case MSPCodes.MSP2_COMMON_MOTOR_MIXER:
@@ -1396,6 +1432,9 @@ var mspHelper = (function (gui) {
                 MIXER_CONFIG.appliedMixerPreset = data.getInt16(5, true);
                 MIXER_CONFIG.numberOfMotors = data.getInt8(7);
                 MIXER_CONFIG.numberOfServos = data.getInt8(8);
+                if (semver.gte(CONFIG.apiVersion, "2.4.0")) {
+                    MIXER_CONFIG.hasSpoilers = data.getInt8(9);
+                }
                 MOTOR_RULES.setMotorCount(MIXER_CONFIG.numberOfMotors);
                 SERVO_RULES.setServoCount(MIXER_CONFIG.numberOfServos);
                 break;
@@ -2105,6 +2144,11 @@ var mspHelper = (function (gui) {
                 buffer.push(MIXER_CONFIG.hasFlaps);
                 buffer.push(lowByte(MIXER_CONFIG.appliedMixerPreset));
                 buffer.push(highByte(MIXER_CONFIG.appliedMixerPreset));
+                buffer.push(MIXER_CONFIG.numberOfMotors);
+                buffer.push(MIXER_CONFIG.numberOfServos);
+                if (semver.gte(CONFIG.apiVersion, "2.4.0")) {
+                    buffer.push(MIXER_CONFIG.hasSpoilers);
+                }
                 break;
 
             case MSPCodes.MSP2_INAV_SET_MC_BRAKING:
@@ -2311,6 +2355,54 @@ var mspHelper = (function (gui) {
             } else {
                 onCompleteCallback();
             }
+        }
+    };
+
+    self.loadLogicConditions = function (callback) {
+        if (semver.gte(CONFIG.flightControllerVersion, "2.2.0")) {
+            MSP.send_message(MSPCodes.MSP2_INAV_LOGIC_CONDITIONS, false, false, callback);
+        }
+    }
+
+    self.sendLogicConditions = function (onCompleteCallback) {
+        let nextFunction = sendCondition,
+            conditionIndex = 0;
+
+        if (LOGIC_CONDITIONS.getCount() == 0 || semver.lt(CONFIG.flightControllerVersion, "2.2.0")) {
+            onCompleteCallback();
+        } else {
+            nextFunction();
+        }
+
+        function sendCondition() {
+
+            let buffer = [];
+
+            // send one at a time, with index
+
+            let condition = LOGIC_CONDITIONS.get()[conditionIndex];
+
+            buffer.push(conditionIndex);
+            buffer.push(condition.getEnabled());
+            buffer.push(condition.getOperation());
+            buffer.push(condition.getOperandAType());
+            buffer.push(specificByte(condition.getOperandAValue(), 0));
+            buffer.push(specificByte(condition.getOperandAValue(), 1));
+            buffer.push(specificByte(condition.getOperandAValue(), 2));
+            buffer.push(specificByte(condition.getOperandAValue(), 3));
+            buffer.push(condition.getOperandBType());
+            buffer.push(specificByte(condition.getOperandAValue(), 0));
+            buffer.push(specificByte(condition.getOperandAValue(), 1));
+            buffer.push(specificByte(condition.getOperandAValue(), 2));
+            buffer.push(specificByte(condition.getOperandAValue(), 3));
+            buffer.push(condition.getFlags());
+
+            // prepare for next iteration
+            conditionIndex++;
+            if (conditionIndex == LOGIC_CONDITIONS.getCount()) { //This is the last rule. Not pretty, but we have to send all rules
+                nextFunction = onCompleteCallback;
+            }
+            MSP.send_message(MSPCodes.MSP2_INAV_SET_LOGIC_CONDITIONS, buffer, false, nextFunction);
         }
     };
 
@@ -3115,7 +3207,11 @@ var mspHelper = (function (gui) {
     };
 
     self.loadServoMixRules = function (callback) {
-        MSP.send_message(MSPCodes.MSP_SERVO_MIX_RULES, false, false, callback);
+        if (semver.gte(CONFIG.flightControllerVersion, "2.2.0")) {
+            MSP.send_message(MSPCodes.MSP2_INAV_SERVO_MIXER, false, false, callback);
+        } else {
+            MSP.send_message(MSPCodes.MSP_SERVO_MIX_RULES, false, false, callback);
+        }
     };
 
     self.loadMotorMixRules = function (callback) {
